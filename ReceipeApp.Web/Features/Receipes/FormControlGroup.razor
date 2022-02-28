@@ -1,0 +1,23 @@
+﻿<div class="col-xl-4 @(StyleClass)">
+    <div class="form-group row">
+        <label for="@LabelFor" class="col-sm-4 col-form-label font-weight-bold text-secondary text-right text-sm-left">@LabelTitle</label>
+        <div class="col-sm-8">
+            @ChildContent
+        </div>
+    </div>
+
+</div>
+
+@code {
+    [Parameter]
+    public string LabelTitle { get; set; }
+
+    [Parameter]
+    public string LabelFor { get; set; }
+
+    [Parameter]
+    public string StyleClass { get; set; }
+
+    [Parameter]
+    public RenderFragment ChildContent { get; set; }
+}

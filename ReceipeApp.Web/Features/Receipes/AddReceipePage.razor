@@ -1,0 +1,92 @@
+﻿@page "/add-receipe"
+@inject HttpClient _httpClient
+
+<h3>AddReceipePage</h3>
+
+<EditForm Model="receipe" OnValidSubmit="SaveReceipe">
+    @*<DataAnnotationsValidator></DataAnnotationsValidator>*@
+    @*<ValidationSummary></ValidationSummary>*@
+
+    <FluentValidationValidator></FluentValidationValidator>
+
+    <FormSection Title="اطلاعات اولیه" Description="در این قسمت اطلاعات اولیه غذا را وارد کنید">
+        <FormControlGroup LabelTitle="نام غذا" LabelFor="@nameof(receipe.Name)">
+            <InputText @bind-Value="receipe.Name" class="form-control" />
+            <ValidationMessage For="() => receipe.Name"></ValidationMessage>
+        </FormControlGroup>
+        <FormControlGroup LabelTitle="توضیحات" LabelFor="@nameof(receipe.Description)">
+            <InputText @bind-Value="receipe.Description" class="form-control" />
+            <ValidationMessage For="() => receipe.Description"></ValidationMessage>
+        </FormControlGroup>
+        <FormControlGroup LabelTitle="دستور پخت" LabelFor="@nameof(receipe.Detail)">
+            <InputTextArea @bind-Value="receipe.Detail" class="form-control" />
+            <ValidationMessage For="() => receipe.Detail"></ValidationMessage>
+        </FormControlGroup>
+    </FormSection>
+
+    <FormSection Title="زمان طبخ" Description=" اطلاعات مربوط به زمان طبخ در این قسمت ثبت می&zwnj;شود">
+        <FormControlGroup LabelTitle="زمان طبخ" LabelFor="@nameof(receipe.PreparationTime)" StyleClass="mx-auto">
+            <InputNumber @bind-Value="receipe.PreparationTime" class="form-control" />
+            <ValidationMessage For="() => receipe.PreparationTime"></ValidationMessage>
+        </FormControlGroup>
+    </FormSection>
+
+    <FormSection Title="مواد لازم" Description="مواد لازم هر غدا را در این قسمت ثبت می&zwnj;">
+        <div class="col-12">
+            @foreach (var ingredient in receipe.Ingredients)
+            {
+                <div class="row">
+                    <FormControlGroup LabelTitle="نام ماده تشکیل دهنده" LabelFor="@nameof(ingredient.Name)">
+                        <InputText @bind-Value="ingredient.Name" class="form-control" />
+                        <ValidationMessage For="() => ingredient.Name"></ValidationMessage>
+                    </FormControlGroup>
+                    <FormControlGroup LabelTitle="مقدار ماده تشکیل دهنده" LabelFor="@nameof(ingredient.Value)">
+                        <InputText @bind-Value="ingredient.Value" class="form-control" />
+                        <ValidationMessage For="() => ingredient.Value"></ValidationMessage>
+                    </FormControlGroup>
+                    <div class="col-xl-4">
+                        <button type="button" class="btn btn-danger" @onclick="(_=>receipe.Ingredients.Remove(ingredient))">حذف</button>
+                    </div>
+                </div>
+            }
+            <div class="row">
+                <div class="text-center mt-5 mx-auto">
+                    <button class="btn btn-primary" type="button" @onclick="AddIngredient">
+                        افزودن مواد لازم
+                    </button>
+                </div>
+            </div>
+        </div>
+    </FormSection>
+
+    <div class="mt-4 mb-5">
+        <div class="row">
+            <div class="offset-4 col-8 text-sm-right">
+                <button class="btn btn-outline-danger" type="button" @onclick="ClearForm">
+                    بازنشانی
+                </button>
+                <button class="btn btn-success" type="submit">ثبت</button>
+            </div>
+        </div>
+    </div>
+</EditForm>
+
+@code {
+    private Receipe receipe = new();
+
+    private async Task SaveReceipe()
+    {
+        await _httpClient.PostAsJsonAsync("/api/receipes", receipe);
+        Console.WriteLine("Valid Submit");
+    }
+
+    private void ClearForm()
+    {
+        receipe = new();
+    }
+
+    private void AddIngredient()
+    {
+        receipe.Ingredients.Add(new Ingredient());
+    }
+}
